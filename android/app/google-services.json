@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "497459418085",
+    "project_id": "ae-system-40ad7",
+    "storage_bucket": "ae-system-40ad7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497459418085:android:4cef87fd951586a03e950c",
+        "android_client_info": {
+          "package_name": "com.example.task_managementapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "497459418085-lgqtobll6r5qjmdo166ssa16h30v8uk6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBW-x0w0u5HAoocinOS-fPaoQs13_ej768"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "497459418085-lgqtobll6r5qjmdo166ssa16h30v8uk6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
