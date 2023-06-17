@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:task_managementapp/screens/addtodo.dart';
 import 'package:task_managementapp/screens/edittodo.dart';
 import 'package:task_managementapp/widgets/todo_card.dart';
+import 'package:intl/intl.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +16,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Select> _selected = [];
+  DateTime selectedDate = DateTime.now();
+  final user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,88 +27,132 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black87,
       appBar: AppBar(
         backgroundColor: Colors.black87,
-        title: const Text("Task Schedule",
-            style: TextStyle(
+        title: Text(
+            "Today               ${DateFormat.yMMMMd().format(DateTime.now())}",
+            style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
                 fontWeight: FontWeight.bold)),
       ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection("Todo").snapshots(),
-          builder: (context, todosnapshot) {
-            if (!todosnapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return ListView.builder(
-                itemCount: todosnapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  IconData icondata;
-                  Color iconcolor;
-                  Map<String, dynamic> tododata =
-                      todosnapshot.data!.docs[index].data();
-
-                  switch (todosnapshot.data?.docs[index]['catagory']) {
-                    case "Workout":
-                      icondata = Icons.run_circle;
-                      iconcolor = Colors.orange;
-                      break;
-                    case "Meeting":
-                      icondata = Icons.video_call;
-                      iconcolor = Colors.blue;
-                      break;
-                    case "Urgent":
-                      icondata = Icons.alarm;
-                      iconcolor = Colors.red;
-                      break;
-                    case "Development":
-                      icondata = Icons.developer_board;
-                      iconcolor = Colors.indigo;
-                      break;
-                    case "Design":
-                      icondata = Icons.draw;
-                      iconcolor = Colors.pinkAccent;
-                      break;
-                    case "Food":
-                      icondata = Icons.local_grocery_store;
-                      iconcolor = Colors.cyan;
-                      break;
-                    case "Study":
-                      icondata = Icons.book;
-                      iconcolor = const Color.fromARGB(255, 11, 56, 52);
-                      break;
-                    case "Sports":
-                      icondata = Icons.sports_cricket;
-                      iconcolor = Colors.black;
-                      break;
-                    default:
-                      icondata = Icons.work_history;
-                      iconcolor = Colors.black;
+      body: Column(
+        children: [
+          Container(
+              padding: const EdgeInsets.all(8),
+              child: DatePicker(
+                DateTime.now(),
+                height: 100,
+                width: 80,
+                initialSelectedDate: DateTime.now(),
+                selectionColor: Colors.purpleAccent,
+                selectedTextColor: Colors.white,
+                dateTextStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey),
+                monthTextStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey),
+                dayTextStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey),
+                onDateChange: (date) {
+                  selectedDate = date;
+                },
+              )),
+          const SizedBox(height: 5),
+          Expanded(
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(user?.uid)
+                    .collection("TaskDetails")
+                    .snapshots(),
+                builder: (context, todosnapshot) {
+                  if (!todosnapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
                   }
+                  return ListView.builder(
+                      itemCount: todosnapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        IconData icondata;
+                        Color iconcolor;
+                        Map<String, dynamic> tododata =
+                            todosnapshot.data!.docs[index].data();
 
-                  _selected.add(Select(
-                      id: todosnapshot.data!.docs[index].id, checkval: false));
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditTodo(
-                                  data: tododata,
-                                  id: todosnapshot.data!.docs[index].id)));
-                    },
-                    child: TodoCard(
-                      title: todosnapshot.data?.docs[index]['title'],
-                      icon: icondata,
-                      iconcolor: iconcolor,
-                      iconBgcolor: Colors.white,
-                      check: _selected[index].checkval,
-                      time: "10 AM",
-                      index: index,
-                      onchnage: onchange,
-                    ),
-                  );
-                });
-          }),
+                        switch (todosnapshot.data?.docs[index]['catagory']) {
+                          case "Workout":
+                            icondata = Icons.run_circle;
+                            iconcolor = Colors.orange;
+                            break;
+                          case "Meeting":
+                            icondata = Icons.video_call;
+                            iconcolor = Colors.blue;
+                            break;
+                          case "Urgent":
+                            icondata = Icons.alarm;
+                            iconcolor = Colors.red;
+                            break;
+                          case "Development":
+                            icondata = Icons.developer_board;
+                            iconcolor = Colors.indigo;
+                            break;
+                          case "Design":
+                            icondata = Icons.draw;
+                            iconcolor = Colors.pinkAccent;
+                            break;
+                          case "Food":
+                            icondata = Icons.local_grocery_store;
+                            iconcolor = Colors.cyan;
+                            break;
+                          case "Study":
+                            icondata = Icons.book;
+                            iconcolor = const Color.fromARGB(255, 11, 56, 52);
+                            break;
+                          case "Sports":
+                            icondata = Icons.sports_cricket;
+                            iconcolor = Colors.black;
+                            break;
+                          default:
+                            icondata = Icons.work_history;
+                            iconcolor = Colors.black;
+                        }
+
+                        _selected.add(Select(
+                            id: todosnapshot.data!.docs[index].id,
+                            checkval: false));
+                        return InkWell(
+                          onTap: () {
+                            print(todosnapshot.data!.docs[index].id);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditTodo(
+                                        user: user,
+                                        data: tododata,
+                                        date: selectedDate,
+                                        id: todosnapshot
+                                            .data!.docs[index].id)));
+                          },
+                          child: TodoCard(
+                            title: todosnapshot.data?.docs[index]['title'],
+                            icon: icondata,
+                            iconcolor: iconcolor,
+                            iconBgcolor: Colors.white,
+                            check: _selected[index].checkval,
+                            starttime: todosnapshot.data?.docs[index]
+                                ['start-time'],
+                            endtime: todosnapshot.data?.docs[index]['end-time'],
+                            index: index,
+                            onchnage: onchange,
+                          ),
+                        );
+                      });
+                }),
+          ),
+        ],
+      ),
     );
   }
 
@@ -111,6 +160,47 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selected[index].checkval = !_selected[index].checkval;
     });
+  }
+
+  Widget bottomnavigationbar(BuildContext context) {
+    return BottomNavigationBar(backgroundColor: Colors.black87, items: [
+      const BottomNavigationBarItem(
+          label: "",
+          icon: Icon(
+            Icons.home,
+            size: 30,
+            color: Colors.white,
+          )),
+      BottomNavigationBarItem(
+          label: "",
+          icon: Container(
+            height: 50,
+            width: 50,
+            decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                    colors: [Colors.indigoAccent, Colors.purple])),
+            child: IconButton(
+              icon: Icon(Icons.add, size: 30),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddTodo(
+                              date: selectedDate,
+                            )));
+              },
+              color: Colors.white,
+            ),
+          )),
+      const BottomNavigationBarItem(
+          label: "",
+          icon: Icon(
+            Icons.settings,
+            size: 30,
+            color: Colors.white,
+          )),
+    ]);
   }
 }
 
@@ -162,43 +252,6 @@ Widget drawer(BuildContext context) {
       ),
     ),
   );
-}
-
-Widget bottomnavigationbar(BuildContext context) {
-  return BottomNavigationBar(backgroundColor: Colors.black87, items: [
-    const BottomNavigationBarItem(
-        label: "",
-        icon: Icon(
-          Icons.home,
-          size: 30,
-          color: Colors.white,
-        )),
-    BottomNavigationBarItem(
-        label: "",
-        icon: Container(
-          height: 50,
-          width: 50,
-          decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient:
-                  LinearGradient(colors: [Colors.indigoAccent, Colors.purple])),
-          child: IconButton(
-            icon: Icon(Icons.add, size: 30),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AddTodo()));
-            },
-            color: Colors.white,
-          ),
-        )),
-    const BottomNavigationBarItem(
-        label: "",
-        icon: Icon(
-          Icons.settings,
-          size: 30,
-          color: Colors.white,
-        )),
-  ]);
 }
 
 class Select {

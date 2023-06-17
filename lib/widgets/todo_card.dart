@@ -4,7 +4,8 @@ class TodoCard extends StatefulWidget {
   final String title;
   final IconData icon;
   final Color iconcolor;
-  final String time;
+  final String starttime;
+  final String endtime;
   final bool check;
   final Color iconBgcolor;
   final Function onchnage;
@@ -12,13 +13,14 @@ class TodoCard extends StatefulWidget {
   const TodoCard(
       {required this.title,
       required this.icon,
-      required this.time,
       required this.check,
       required this.onchnage,
       required this.index,
       required this.iconBgcolor,
       required this.iconcolor,
-      super.key});
+      super.key,
+      required this.starttime,
+      required this.endtime});
 
   @override
   State<TodoCard> createState() => _TodoCardState();
@@ -78,11 +80,36 @@ class _TodoCardState extends State<TodoCard> {
                                   letterSpacing: 1,
                                   fontWeight: FontWeight.w500)),
                         ),
-                        Text(widget.time,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            )),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.access_time_rounded,
+                              color: Colors.white54,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(widget.starttime,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                )),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: Text("-",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  )),
+                            ),
+                            Text(widget.endtime,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                )),
+                          ],
+                        ),
                         const SizedBox(
                           width: 12,
                         )
