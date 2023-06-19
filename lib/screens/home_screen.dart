@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Select> _selected = [];
+  bool? check;
   DateTime selectedDate = DateTime.now();
   final user = FirebaseAuth.instance.currentUser;
 
@@ -59,20 +60,54 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey),
                 onDateChange: (date) {
                   selectedDate = date;
+                  setState(() {});
+                  print(selectedDate);
                 },
               )),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Expanded(
             child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection("users")
                     .doc(user?.uid)
                     .collection("TaskDetails")
+                    .where('selectedDate',
+                        isEqualTo: DateFormat.yMd().format(selectedDate))
                     .snapshots(),
                 builder: (context, todosnapshot) {
-                  if (!todosnapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                  if (todosnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
+
+                  if (!todosnapshot.hasData ||
+                      todosnapshot.data!.docs.isEmpty) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                            height: 160,
+                            "https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX32743770.jpg"),
+                        const Text("You do not have any task yet!.",
+                            style: TextStyle(color: Colors.blueGrey)),
+                        const Text("Add new task to make your day productive.",
+                            style: TextStyle(color: Colors.blueGrey)),
+                      ],
+                    );
+                  }
+                  // if (!todosnapshot.hasData) {
+                  //   return Column(
+                  //     children: [
+                  //       Image.network(
+                  //           height: 100,
+                  //           "https://cdn-icons-png.flaticon.com/512/1053/1053087.png"),
+                  //       const Text(
+                  //           "You do not have any task yet!. Add new task to make your day productive.")
+                  //     ],
+                  //   );
+                  // }
                   return ListView.builder(
                       itemCount: todosnapshot.data!.docs.length,
                       itemBuilder: (context, index) {
@@ -160,6 +195,23 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selected[index].checkval = !_selected[index].checkval;
     });
+    check = _selected[index].checkval;
+  }
+
+  Future<void> deleteTasks(List<Select> selectedTasks, String userId) async {
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (final selectedTask in selectedTasks) {
+      final taskRef = FirebaseFirestore.instance
+          .collection("users")
+          .doc(userId)
+          .collection("TaskDetails")
+          .doc(selectedTask.id);
+
+      batch.delete(taskRef);
+    }
+
+    await batch.commit();
   }
 
   Widget bottomnavigationbar(BuildContext context) {
@@ -193,13 +245,23 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
             ),
           )),
-      const BottomNavigationBarItem(
-          label: "",
-          icon: Icon(
-            Icons.settings,
-            size: 30,
-            color: Colors.white,
-          )),
+      BottomNavigationBarItem(
+        label: "",
+        icon: check == true
+            ? IconButton(
+                onPressed: () {
+                  deleteTasks(_selected, user!.uid);
+
+                  // Clear the selected tasks list
+                  _selected.clear();
+                },
+                icon: const Icon(Icons.delete, color: Colors.white, size: 26))
+            : const Icon(
+                Icons.settings,
+                size: 30,
+                color: Colors.white,
+              ),
+      ),
     ]);
   }
 }

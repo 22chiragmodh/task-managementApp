@@ -103,7 +103,9 @@ class _EditTodoState extends State<EditTodo> {
                           IconButton(
                               onPressed: () {
                                 FirebaseFirestore.instance
-                                    .collection('Todo')
+                                    .collection("users")
+                                    .doc(widget.user?.uid)
+                                    .collection("TaskDetails")
                                     .doc(widget.id)
                                     .delete()
                                     .then((value) => {

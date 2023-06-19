@@ -15,7 +15,7 @@ class _AddTodoState extends State<AddTodo> {
   TextEditingController titlecontroller = TextEditingController();
   TextEditingController descriptioncontroller = TextEditingController();
   String selectCatagory = "Other";
-  DateTime? selectedDate;
+  String? selectedDate;
   String startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   String endTime = "11:30 PM";
   int selectRemind = 5;
@@ -363,7 +363,7 @@ class _AddTodoState extends State<AddTodo> {
     if (pickDate != null) {
       setState(() {
         widget.date = pickDate;
-        selectedDate = pickDate;
+        selectedDate = DateFormat.yMd().format(pickDate);
       });
     }
   }
