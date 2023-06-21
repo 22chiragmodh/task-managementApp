@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:task_managementapp/screens/addtodo.dart';
 import 'package:task_managementapp/screens/edittodo.dart';
+import 'package:task_managementapp/services/notification_service.dart';
 import 'package:task_managementapp/widgets/todo_card.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,9 +23,14 @@ class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: drawer(context),
+      endDrawer: drawer(context, user!),
       bottomNavigationBar: bottomnavigationbar(context),
       backgroundColor: Colors.black87,
       appBar: AppBar(
@@ -59,8 +66,9 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.w600,
                     color: Colors.grey),
                 onDateChange: (date) {
-                  selectedDate = date;
-                  setState(() {});
+                  setState(() {
+                    selectedDate = date;
+                  });
                   print(selectedDate);
                 },
               )),
@@ -71,8 +79,6 @@ class _HomePageState extends State<HomePage> {
                     .collection("users")
                     .doc(user?.uid)
                     .collection("TaskDetails")
-                    .where('selectedDate',
-                        isEqualTo: DateFormat.yMd().format(selectedDate))
                     .snapshots(),
                 builder: (context, todosnapshot) {
                   if (todosnapshot.connectionState == ConnectionState.waiting) {
@@ -97,93 +103,164 @@ class _HomePageState extends State<HomePage> {
                       ],
                     );
                   }
-                  // if (!todosnapshot.hasData) {
-                  //   return Column(
-                  //     children: [
-                  //       Image.network(
-                  //           height: 100,
-                  //           "https://cdn-icons-png.flaticon.com/512/1053/1053087.png"),
-                  //       const Text(
-                  //           "You do not have any task yet!. Add new task to make your day productive.")
-                  //     ],
-                  //   );
-                  // }
-                  return ListView.builder(
-                      itemCount: todosnapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        IconData icondata;
-                        Color iconcolor;
-                        Map<String, dynamic> tododata =
-                            todosnapshot.data!.docs[index].data();
 
-                        switch (todosnapshot.data?.docs[index]['catagory']) {
-                          case "Workout":
-                            icondata = Icons.run_circle;
-                            iconcolor = Colors.orange;
-                            break;
-                          case "Meeting":
-                            icondata = Icons.video_call;
-                            iconcolor = Colors.blue;
-                            break;
-                          case "Urgent":
-                            icondata = Icons.alarm;
-                            iconcolor = Colors.red;
-                            break;
-                          case "Development":
-                            icondata = Icons.developer_board;
-                            iconcolor = Colors.indigo;
-                            break;
-                          case "Design":
-                            icondata = Icons.draw;
-                            iconcolor = Colors.pinkAccent;
-                            break;
-                          case "Food":
-                            icondata = Icons.local_grocery_store;
-                            iconcolor = Colors.cyan;
-                            break;
-                          case "Study":
-                            icondata = Icons.book;
-                            iconcolor = const Color.fromARGB(255, 11, 56, 52);
-                            break;
-                          case "Sports":
-                            icondata = Icons.sports_cricket;
-                            iconcolor = Colors.black;
-                            break;
-                          default:
-                            icondata = Icons.work_history;
-                            iconcolor = Colors.black;
-                        }
+                  return AnimationLimiter(
+                    child: ListView.builder(
+                        itemCount: todosnapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          // DateTime scheduledDateTime =
+                          //     DateTime(2023, 6, 21, 15, 45);
 
-                        _selected.add(Select(
-                            id: todosnapshot.data!.docs[index].id,
-                            checkval: false));
-                        return InkWell(
-                          onTap: () {
-                            print(todosnapshot.data!.docs[index].id);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditTodo(
-                                        user: user,
-                                        data: tododata,
-                                        date: selectedDate,
-                                        id: todosnapshot
-                                            .data!.docs[index].id)));
-                          },
-                          child: TodoCard(
-                            title: todosnapshot.data?.docs[index]['title'],
-                            icon: icondata,
-                            iconcolor: iconcolor,
-                            iconBgcolor: Colors.white,
-                            check: _selected[index].checkval,
-                            starttime: todosnapshot.data?.docs[index]
-                                ['start-time'],
-                            endtime: todosnapshot.data?.docs[index]['end-time'],
-                            index: index,
-                            onchnage: onchange,
-                          ),
-                        );
-                      });
+                          // String taskDate = todosnapshot.data?.docs[index]
+                          //     ['selectedDate']; // Example value from Firebase
+                          // String taskTime =
+                          //     todosnapshot.data?.docs[index]['start-time'];
+
+                          // DateTime parsedDate =
+                          //     DateFormat('M/d/y').parse(taskDate);
+                          // DateTime parsedTime =
+                          //     DateFormat('h:mm a').parse(taskTime);
+
+                          // DateTime scheduledDateTime = DateTime(
+                          //   parsedDate.year,
+                          //   parsedDate.month,
+                          //   parsedDate.day,
+                          //   parsedTime.hour,
+                          //   parsedTime.minute,
+                          // );
+
+                          DateTime date = DateFormat.jm().parse(
+                              todosnapshot.data!.docs[index]['start-time']);
+                          var myTime = DateFormat("HH:mm").format(date);
+
+                          IconData icondata;
+                          Color iconcolor;
+                          Map<String, dynamic> tododata =
+                              todosnapshot.data!.docs[index].data();
+
+                          switch (todosnapshot.data?.docs[index]['catagory']) {
+                            case "Workout":
+                              icondata = Icons.run_circle;
+                              iconcolor = Colors.orange;
+                              break;
+                            case "Meeting":
+                              icondata = Icons.video_call;
+                              iconcolor = Colors.blue;
+                              break;
+                            case "Urgent":
+                              icondata = Icons.alarm;
+                              iconcolor = Colors.red;
+                              break;
+                            case "Development":
+                              icondata = Icons.developer_board;
+                              iconcolor = Colors.indigo;
+                              break;
+                            case "Design":
+                              icondata = Icons.draw;
+                              iconcolor = Colors.pinkAccent;
+                              break;
+                            case "Market":
+                              icondata = Icons.local_grocery_store;
+                              iconcolor = Colors.cyan;
+                              break;
+                            case "Study":
+                              icondata = Icons.book;
+                              iconcolor = const Color.fromARGB(255, 11, 56, 52);
+                              break;
+                            case "Sports":
+                              icondata = Icons.sports_cricket;
+                              iconcolor = Colors.black;
+                              break;
+                            case "Gym":
+                              icondata = Icons.fitness_center;
+                              iconcolor = Colors.black;
+                              break;
+                            case "Eating":
+                              icondata = Icons.fastfood;
+                              iconcolor = Colors.black;
+                              break;
+                            case "Learning":
+                              icondata = Icons.code;
+                              iconcolor = Colors.black;
+                              break;
+                            case "Dance":
+                              icondata = Icons.event;
+                              iconcolor = Colors.black;
+                              break;
+                            case "Music":
+                              icondata = Icons.music_note;
+                              iconcolor = Colors.black;
+                              break;
+                            case "HomeWork":
+                              icondata = Icons.school;
+                              iconcolor = Colors.black;
+                              break;
+
+                            default:
+                              icondata = Icons.work_history;
+                              iconcolor = Colors.black;
+                          }
+
+                          _selected.add(Select(
+                              id: todosnapshot.data!.docs[index].id,
+                              checkval: false));
+                          NotifyHelper().scheduleNotification(
+                            int.parse(myTime.toString().split(":")[0]),
+                            int.parse(myTime.toString().split(":")[1]),
+                            todosnapshot.data?.docs[index]['title'],
+                            index,
+                            todosnapshot.data?.docs[index]['description'],
+                          );
+
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: InkWell(
+                                    onTap: () {
+                                      print(myTime);
+                                      // print(parsedDate);
+                                      // print(parsedTime);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EditTodo(
+                                                  user: user,
+                                                  data: tododata,
+                                                  date: selectedDate,
+                                                  id: todosnapshot
+                                                      .data!.docs[index].id)));
+                                    },
+                                    child: (todosnapshot.data?.docs[index]
+                                                    ['selectedDate'] ==
+                                                DateFormat.yMd()
+                                                    .format(selectedDate)) ||
+                                            (todosnapshot
+                                                    .data?.docs[index]['repeat']
+                                                    .toString() ==
+                                                "Daily")
+                                        ? TodoCard(
+                                            title: todosnapshot
+                                                .data?.docs[index]['title'],
+                                            icon: icondata,
+                                            iconcolor: iconcolor,
+                                            iconBgcolor: Colors.white,
+                                            check: _selected[index].checkval,
+                                            starttime: todosnapshot.data
+                                                ?.docs[index]['start-time'],
+                                            endtime: todosnapshot
+                                                .data?.docs[index]['end-time'],
+                                            index: index,
+                                            onchnage: onchange,
+                                          )
+                                        : Container(),
+                                  ),
+                                )),
+                          );
+                        }),
+                  );
                 }),
           ),
         ],
@@ -194,8 +271,8 @@ class _HomePageState extends State<HomePage> {
   void onchange(int index) {
     setState(() {
       _selected[index].checkval = !_selected[index].checkval;
+      check = _selected[index].checkval;
     });
-    check = _selected[index].checkval;
   }
 
   Future<void> deleteTasks(List<Select> selectedTasks, String userId) async {
@@ -250,6 +327,7 @@ class _HomePageState extends State<HomePage> {
         icon: check == true
             ? IconButton(
                 onPressed: () {
+                  print(user!.email);
                   deleteTasks(_selected, user!.uid);
 
                   // Clear the selected tasks list
@@ -266,53 +344,99 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Widget drawer(BuildContext context) {
-  return Align(
-    alignment: Alignment.topRight,
-    child: SizedBox(
-      height: 640,
-      child: Drawer(
-        width: 200,
-        backgroundColor: const Color(0xff2a2e3d),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32), bottomLeft: Radius.circular(32)),
-        ),
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
+Future<String> getuserName(User currentUser) async {
+  if (currentUser != null) {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
 
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 28),
-                  child: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                    visualDensity: VisualDensity.standard,
+    if (snapshot.exists) {
+      Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+      String username = userData['username'];
+      return username;
+    } else {
+      return 'User document does not exist';
+    }
+  } else {
+    return '';
+  }
+}
+
+Widget drawer(BuildContext context, User user) {
+  return FutureBuilder<String>(
+    future: getuserName(user),
+    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator(); // Show a loading indicator while fetching data
+      } else if (snapshot.hasError) {
+        return const Text(
+            'Error retrieving user data'); // Show an error message if there was an error
+      } else {
+        String? username = snapshot.data;
+        return Align(
+          alignment: Alignment.topRight,
+          child: SizedBox(
+            height: 640,
+            child: Drawer(
+              width: 200,
+              backgroundColor: const Color(0xff2a2e3d),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    bottomLeft: Radius.circular(32)),
+              ),
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 28),
+                        child: IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                          visualDensity: VisualDensity.standard,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      username ?? 'No username',
+                      style: const TextStyle(
+                          color: Colors.blueGrey, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30, top: 5),
+                    child: Text(
+                      user.email.toString(),
+                      style: const TextStyle(
+                          color: Colors.blueGrey, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                  Container(
+                    margin: const EdgeInsets.all(20),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffFF7F50)),
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      child: const Text("Logout"),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(
-              height: 80,
-            ),
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffFF7F50)),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                  },
-                  child: const Text("Logout")),
-            )
-          ],
-        ),
-      ),
-    ),
+          ),
+        );
+      }
+    },
   );
 }
 

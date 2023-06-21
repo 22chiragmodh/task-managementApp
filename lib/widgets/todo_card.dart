@@ -76,22 +76,25 @@ class _TodoCardState extends State<TodoCard> {
                           child: Text(widget.title,
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 18,
+                                  fontSize: 14,
                                   letterSpacing: 1,
-                                  fontWeight: FontWeight.w500)),
+                                  fontWeight: FontWeight.bold)),
                         ),
+                        const SizedBox(width: 5),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const Icon(
                               Icons.access_time_rounded,
                               color: Colors.white54,
+                              size: 18,
                             ),
                             const SizedBox(width: 5),
                             Text(widget.starttime,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 12,
                                 )),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 5),
@@ -106,7 +109,7 @@ class _TodoCardState extends State<TodoCard> {
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 12,
                                 )),
                           ],
                         ),

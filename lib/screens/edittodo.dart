@@ -23,7 +23,7 @@ class _EditTodoState extends State<EditTodo> {
   TextEditingController? titlecontroller;
   TextEditingController? descriptioncontroller;
   String selectCatagory = "";
-  DateTime? selectedDate;
+  String? selectedDate;
   String startTime = "";
   String endTime = "";
   int? selectRemind;
@@ -55,7 +55,7 @@ class _EditTodoState extends State<EditTodo> {
     descriptioncontroller =
         TextEditingController(text: widget.data['description']);
     selectCatagory = widget.data['catagory'];
-    selectedDate = (widget.data['selectedDate'] as Timestamp).toDate();
+    selectedDate = widget.data['selectedDate'];
     startTime = widget.data['start-time'];
     endTime = widget.data['end-time'];
     selectRepeat = widget.data['repeat'];
@@ -418,7 +418,7 @@ class _EditTodoState extends State<EditTodo> {
     if (pickDate != null) {
       setState(() {
         widget.date = pickDate;
-        selectedDate = pickDate;
+        selectedDate = DateFormat.yMd().format(pickDate);
       });
     }
   }
