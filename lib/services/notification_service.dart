@@ -25,13 +25,13 @@ class NotifyHelper {
     );
   }
 
-  scheduleNotification(
-      int hour, int minute, String title, int id, String Description) async {
+  scheduleNotification(int hour, int minute, String scheduledate, String title,
+      int id, String Description) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
         title,
         Description,
-        convertTime(hour, minute),
+        convertTime(scheduledate, hour, minute),
         const NotificationDetails(
             android: AndroidNotificationDetails(
                 "your channel id", "your channel name")),
@@ -41,15 +41,16 @@ class NotifyHelper {
         matchDateTimeComponents: DateTimeComponents.time);
   }
 
-  tz.TZDateTime convertTime(int hour, int minute) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime ScheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+  tz.TZDateTime convertTime(String scheduledate, int hour, int minute) {
+    final List<String> dateParts = scheduledate.split('/');
+    final int year = int.parse(dateParts[2]);
+    final int month = int.parse(dateParts[0]);
+    final int day = int.parse(dateParts[1]);
 
-    if (ScheduledDate.isBefore(now)) {
-      ScheduledDate = ScheduledDate.add(const Duration(days: 1));
-    }
-    return ScheduledDate;
+    final tz.TZDateTime scheduledDateTime =
+        tz.TZDateTime(tz.local, year, month, day, hour, minute);
+
+    return scheduledDateTime;
   }
 
   Future<void> configureLocalTimeZone() async {

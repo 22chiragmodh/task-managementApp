@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:task_managementapp/screens/addtodo.dart';
 import 'package:task_managementapp/screens/edittodo.dart';
 import 'package:task_managementapp/services/notification_service.dart';
+
 import 'package:task_managementapp/widgets/todo_card.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -69,7 +70,6 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     selectedDate = date;
                   });
-                  print(selectedDate);
                 },
               )),
           const SizedBox(height: 10),
@@ -108,30 +108,14 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.builder(
                         itemCount: todosnapshot.data!.docs.length,
                         itemBuilder: (context, index) {
-                          // DateTime scheduledDateTime =
-                          //     DateTime(2023, 6, 21, 15, 45);
-
-                          // String taskDate = todosnapshot.data?.docs[index]
-                          //     ['selectedDate']; // Example value from Firebase
-                          // String taskTime =
-                          //     todosnapshot.data?.docs[index]['start-time'];
-
-                          // DateTime parsedDate =
-                          //     DateFormat('M/d/y').parse(taskDate);
-                          // DateTime parsedTime =
-                          //     DateFormat('h:mm a').parse(taskTime);
-
-                          // DateTime scheduledDateTime = DateTime(
-                          //   parsedDate.year,
-                          //   parsedDate.month,
-                          //   parsedDate.day,
-                          //   parsedTime.hour,
-                          //   parsedTime.minute,
-                          // );
-
-                          DateTime date = DateFormat.jm().parse(
+                          DateTime date = DateFormat.Hm().parse(
                               todosnapshot.data!.docs[index]['start-time']);
                           var myTime = DateFormat("HH:mm").format(date);
+
+                          //schedule notification
+
+                          String scheduledate =
+                              todosnapshot.data?.docs[index]['selectedDate'];
 
                           IconData icondata;
                           Color iconcolor;
@@ -207,6 +191,7 @@ class _HomePageState extends State<HomePage> {
                           NotifyHelper().scheduleNotification(
                             int.parse(myTime.toString().split(":")[0]),
                             int.parse(myTime.toString().split(":")[1]),
+                            scheduledate,
                             todosnapshot.data?.docs[index]['title'],
                             index,
                             todosnapshot.data?.docs[index]['description'],
@@ -220,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                 child: FadeInAnimation(
                                   child: InkWell(
                                     onTap: () {
-                                      print(myTime);
+                                      // print(myTime);
                                       // print(parsedDate);
                                       // print(parsedTime);
                                       Navigator.push(

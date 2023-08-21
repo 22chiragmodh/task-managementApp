@@ -363,7 +363,9 @@ class _AddTodoState extends State<AddTodo> {
     if (pickDate != null) {
       setState(() {
         widget.date = pickDate;
+
         selectedDate = DateFormat.yMd().format(pickDate);
+        print(selectedDate);
       });
     }
   }
@@ -411,6 +413,7 @@ class _AddTodoState extends State<AddTodo> {
         setState(() {
           startTime = formattedTime;
         });
+        print(startTime);
       } else {
         setState(() {
           endTime = formattedTime;

@@ -35,3 +35,97 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:task_managementapp/services/schedulenoti.dart';
+// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   NotificationService().initNotification();
+//   tz.initializeTimeZones();
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(home: const MyHomePage());
+//   }
+// }
+
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({super.key});
+
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [DatePickerTxt(), ScheduleBtn()],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// DateTime scheduleTime = DateTime.now();
+
+// class DatePickerTxt extends StatefulWidget {
+//   const DatePickerTxt({
+//     Key? key,
+//   }) : super(key: key);
+
+//   @override
+//   State<DatePickerTxt> createState() => _DatePickerTxtState();
+// }
+
+// class _DatePickerTxtState extends State<DatePickerTxt> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return TextButton(
+//       onPressed: () {
+//         DatePicker.showDateTimePicker(
+//           context,
+//           showTitleActions: true,
+//           onChanged: (date) => scheduleTime = date,
+//           onConfirm: (date) {},
+//         );
+//       },
+//       child: const Text(
+//         'Select Date Time',
+//         style: TextStyle(color: Colors.blue),
+//       ),
+//     );
+//   }
+// }
+
+// class ScheduleBtn extends StatelessWidget {
+//   const ScheduleBtn({
+//     Key? key,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ElevatedButton(
+//       child: const Text('Schedule notifications'),
+//       onPressed: () {
+//         debugPrint('Notification Scheduled for $scheduleTime');
+//         print("$scheduleTime");
+//         NotificationService().scheduleNotification(
+//             title: 'Scheduled Notification',
+//             body: '$scheduleTime',
+//             scheduledNotificationDateTime: scheduleTime);
+//       },
+//     );
+//   }
+// }
