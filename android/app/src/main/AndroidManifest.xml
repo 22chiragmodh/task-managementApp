@@ -8,7 +8,7 @@
 
 
    <application
-        android:label="task_managementapp"
+        android:label="TaskBuzz"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

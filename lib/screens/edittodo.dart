@@ -460,17 +460,15 @@ class _EditTodoState extends State<EditTodo> {
   }
 
   void onTimeSelected(TimeOfDay pickedTime, bool isStartTime) {
-    if (pickedTime != null) {
-      String formattedTime = pickedTime.format(context);
-      if (isStartTime) {
-        setState(() {
-          startTime = formattedTime;
-        });
-      } else {
-        setState(() {
-          endTime = formattedTime;
-        });
-      }
+    String formattedTime = pickedTime.format(context);
+    if (isStartTime) {
+      setState(() {
+        startTime = formattedTime;
+      });
+    } else {
+      setState(() {
+        endTime = formattedTime;
+      });
     }
   }
 

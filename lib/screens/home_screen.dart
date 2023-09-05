@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Select> _selected = [];
+  final List<Select> _selected = [];
   bool? check;
   DateTime selectedDate = DateTime.now();
   final user = FirebaseAuth.instance.currentUser;
@@ -188,6 +188,7 @@ class _HomePageState extends State<HomePage> {
                           _selected.add(Select(
                               id: todosnapshot.data!.docs[index].id,
                               checkval: false));
+
                           NotifyHelper().scheduleNotification(
                             int.parse(myTime.toString().split(":")[0]),
                             int.parse(myTime.toString().split(":")[1]),
@@ -295,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                 gradient: LinearGradient(
                     colors: [Colors.indigoAccent, Colors.purple])),
             child: IconButton(
-              icon: Icon(Icons.add, size: 30),
+              icon: const Icon(Icons.add, size: 30),
               onPressed: () {
                 Navigator.push(
                     context,

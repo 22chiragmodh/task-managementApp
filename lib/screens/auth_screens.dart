@@ -54,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
             style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
           ),
-          backgroundColor: Theme.of(ctx).errorColor,
+          backgroundColor: Theme.of(ctx).colorScheme.error,
         ),
       );
 
@@ -69,7 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
             style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
           ),
-          backgroundColor: Theme.of(ctx).errorColor,
+          backgroundColor: Theme.of(ctx).colorScheme.error,
         ),
       );
       // print(err);

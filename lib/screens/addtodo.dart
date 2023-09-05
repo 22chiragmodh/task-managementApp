@@ -407,18 +407,16 @@ class _AddTodoState extends State<AddTodo> {
   }
 
   void onTimeSelected(TimeOfDay pickedTime, bool isStartTime) {
-    if (pickedTime != null) {
-      String formattedTime = pickedTime.format(context);
-      if (isStartTime) {
-        setState(() {
-          startTime = formattedTime;
-        });
-        print(startTime);
-      } else {
-        setState(() {
-          endTime = formattedTime;
-        });
-      }
+    String formattedTime = pickedTime.format(context);
+    if (isStartTime) {
+      setState(() {
+        startTime = formattedTime;
+      });
+      print(startTime);
+    } else {
+      setState(() {
+        endTime = formattedTime;
+      });
     }
   }
 
